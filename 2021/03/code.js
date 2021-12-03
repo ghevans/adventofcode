@@ -18,33 +18,29 @@ function part1(input) {
 function mostCommon(input, col) {
     let zeros = _.filter(_.map(input, row => row[col]), item => item === '0').length;
     let ones = _.filter(_.map(input, row => row[col]), item => item === '1').length;
-    console.log(`ones: ${ones} | zeros: ${zeros}`)
     return ((ones === zeros) || (ones > zeros)) ? '1' : '0';
-    return (_.sum(_.map(input, row => { return Number(row[col])})) > input.length / 2) ? '1' : '0';
 }
 
 function leastCommon(input, col) {
     return (mostCommon(input, col) === '1') ? '0' : '1';
 }
 
-function filterGroup(group, col, val) {
-    return _.filter(group, item => item[col] === val);
-}
-
 function part2(input) {
-    let possibilities = input;
+    let oxygenRating = _.cloneDeep(input);
+    let co2ScrubberRating = _.cloneDeep(input);
     let index = 0;
-    while (possibilities.length > 1) {
-        possibilities = filterGroup(possibilities, index, mostCommon(possibilities, index));
-        console.log(`${index} | ${possibilities}`);
+    while (oxygenRating.length > 1) {
+        oxygenRating = _.filter(oxygenRating, item => item[index] === mostCommon(oxygenRating, index));
         index++;
     }
-    console.log(`oxyGen = ${possibilities}`)
-    // for(let i = 0; i < input[0].length; i++) {
-    //     let bits = _.map(input, row => { return Number(row[i])});
-    //     console.log(bits);
-    // }
-    return "tbd";
+
+    index = 0;
+    while (co2ScrubberRating.length > 1) {
+        co2ScrubberRating = _.filter(co2ScrubberRating, item => item[index] === leastCommon(co2ScrubberRating, index));
+        index++;
+    }
+    
+    return (parseInt(oxygenRating, 2) * parseInt(co2ScrubberRating, 2));
 }
 
 console.log("Part 1 - " + part1(input));
