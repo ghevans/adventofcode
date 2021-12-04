@@ -2,12 +2,12 @@ const _ = require('lodash');
 const {seq, cards, testSeq, testCards} = require('./input');
 
 function part1(cards, seq) {
+    let allWinners = new Set();
     for(let i = 0; i < seq.length; i++) {
-        console.log(`Next Number is: ${seq[i]}`)
         cards = evalCards(cards, seq[i]);
-        let winner = checkWinners(cards, i, seq[i]);
-        if (winner > -1) {
-            return winner;
+        let winner = checkWinners(cards, i, seq[i], allWinners);
+        if (winner.size > 0) {
+            return winner.values().next().value;
         }
     }
 }
@@ -23,9 +23,10 @@ function evalCards(cards, num) {
     return cards;
 }
 
-function checkWinners(cards, round, curNumber) {
-    let temp = [...Array(5)].map(x=>Array(5));
+function checkWinners(cards, round, curNumber, prevWinners) {
+    let roundWinners = new Map();
     for (const [i, card] of cards.entries()) {
+        let temp = [...Array(5)].map(x=>Array(5));
         let sumUnmarked = 0;
         for(const [num, details] of card) {
             temp[details.y][details.x] = (details.seen) ? 1 : 0;
@@ -37,11 +38,9 @@ function checkWinners(cards, round, curNumber) {
             for (let x = 0; x < 5; x++) {
                 row += temp[y][x];
             }
-            if (row === 5) {
-                // console.log(`WINNER FOUND AT INDEX ${i}!!!`)
-                // console.log(`sumUnmarked: ${sumUnmarked}`)
-                printCards(cards, round);
-                return sumUnmarked*curNumber;
+            if (row === 5 && !prevWinners.has(i)) {
+                //printCards(cards, round);
+                roundWinners.set(i, sumUnmarked*curNumber);
             }
         }
 
@@ -51,15 +50,13 @@ function checkWinners(cards, round, curNumber) {
             for (let y = 0; y < 5; y++) {
                 col += temp[y][x];
             }
-            if (col === 5) {
-                // console.log(`WINNER FOUND AT INDEX ${i}!!!`)
-                // console.log(`sumUnmarked: ${sumUnmarked}`)
-                printCards(cards, round);
-                return sumUnmarked*curNumber;
+            if (col === 5 && !prevWinners.has(i)) {
+                //printCards(cards, round);
+                roundWinners.set(i, sumUnmarked*curNumber);
             }
         }
     }
-    return -1;
+    return roundWinners;
 }
 
 function printCards(cards, round) {
@@ -82,9 +79,23 @@ function printCards(cards, round) {
     console.log(`============================`)
 }
 
-function part2(input) {
-    return "tbd";
+function part2(cards, seq) {
+    let allWinners = new Set();
+    let roundWinners = new Map();
+    for(let i = 0; i < seq.length; i++) {
+        cards = evalCards(cards, seq[i]);
+        roundWinners = checkWinners(cards, i, seq[i], allWinners);
+        if (roundWinners.size > 0) {
+            for (key of roundWinners.keys()) {
+                allWinners.add(key);
+            }
+
+            if (allWinners.size === cards.length) {
+                return roundWinners.values().next().value;
+            }
+        }
+    }
 }
 
-console.log("Part 1 - " + part1(testCards, testSeq));
-// console.log("Part 2 - " + part2(input));
+console.log("Part 1 - " + part1(cards, seq));
+console.log("Part 2 - " + part2(cards, seq));
