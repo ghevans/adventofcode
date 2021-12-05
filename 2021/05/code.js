@@ -24,11 +24,7 @@ function part1(input) {
         }
     });
 
-    let overlaps = 0;
-    for(const [key, val] of locs) {
-        overlaps += (val >= 2) ? 1 : 0;
-    }
-    return overlaps;
+    return getIntersections(locs);
 }
 
 function part2(input) {
@@ -37,14 +33,6 @@ function part2(input) {
         if(line.startX !== line.endX && line.startY !== line.endY) {
             if (line.startX < line.endX) {
                 let xDiff = 1, yDiff = (line.startY < line.endY) ? 1 : -1;
-                // if (line.startY < line.endY) {
-                //     // diagonal left/down => y+1, x+1 (0,0) => (8,8)
-                //     xDiff = 1, yDiff = 1;
-                // } else {
-                //     // diagonal left/up => y-1, x+1 (5,5) => (8,2)
-                //     xDiff = 1, yDiff = -1;
-                // }
-                
                 for(let y = line.startY,  x = line.startX; x <= line.endX; y+=yDiff, x+=xDiff) {
                     if(locs.has(`${x},${y}`)) {
                         locs.set(`${x},${y}`, locs.get(`${x},${y}`) + 1);
@@ -53,15 +41,7 @@ function part2(input) {
                     }
                 }
             } else {
-                let xDiff = -1, yDiff = (line.startY < line.endY) ? 1 : -1;
-                // if (line.startY < line.endY) {
-                //     // diagonal right/down => y+1, x-1 (8,0) => (0,8)
-                //     xDiff = -1, yDiff = 1;
-                // } else {
-                //     // diagonal right/up => y-1, x-1 (6,4) => (2,0)
-                //     xDiff = -1, yDiff = -1;
-                // }
-                
+                let xDiff = -1, yDiff = (line.startY < line.endY) ? 1 : -1;                
                 for(let y = line.startY,  x = line.startX; x >= line.endX; y+=yDiff, x+=xDiff) {
                     if(locs.has(`${x},${y}`)) {
                         locs.set(`${x},${y}`, locs.get(`${x},${y}`) + 1);
@@ -88,12 +68,15 @@ function part2(input) {
         }
     });
 
+    return getIntersections(locs);
+}
+
+function getIntersections(locs) {
     let overlaps = 0;
     for(const [key, val] of locs) {
         overlaps += (val >= 2) ? 1 : 0;
     }
     return overlaps;
 }
-
 console.log("Part 1 - " + part1(input));
 console.log("Part 2 - " + part2(input));
