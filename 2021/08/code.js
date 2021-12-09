@@ -20,7 +20,6 @@ function part1(input) {
             set.add(pattern);
             signal.map.set(pattern.length, set);
         })
-        console.log(signal);
         countOfEasy += _.filter(signal.output, out => out.length === 2 || out.length === 3 || out.length === 4 || out.length === 7).length;
     })
     return countOfEasy;
@@ -28,10 +27,9 @@ function part1(input) {
 
 
 function part2(input) {
-    let countOfEasy = 0;
-
-
+    let countOfHard = 0;
     _.forEach(input, signal => {
+        let code = '';
         let segments = {
             top: `abcdefg`.split(''),
             ul: `abcdefg`.split(''),
@@ -41,15 +39,12 @@ function part2(input) {
             lr: `abcdefg`.split(''),
             bot: `abcdefg`.split('') 
         }
-
+        
         segments.ur = segments.lr = signal.patterns[0]; // one
         segments.top = _.xor(segments.ur, signal.patterns[1]); // seven => TOP
         segments.ul = segments.mid = _.xor(signal.patterns[2], segments.ur); // four
         segments.ll = segments.bot = _.xor(segments.ll, _.union(segments.ur,segments.top, segments.ul)); // the rest
-        
-        let eight = signal.patterns[9];
-        console.log(`eight: ${eight}`)
-        console.log(segments);
+    
 
         let twoThreeFive = _.filter(signal.patterns, pattern => pattern.length === 5);
         let zeroSixNine = _.filter(signal.patterns, pattern => pattern.length === 6);
@@ -67,14 +62,31 @@ function part2(input) {
         segments.ur = _.map(twoThreeFive, pattern => _.xor(pattern, upperTwo)).filter(s => s.length === 1)[0];
         segments.lr = _.xor(segments.lr, segments.ur);
 
-        console.log(segments);
-
-
+        let decoded = {
+            0: _.union(segments.top, segments.ur, segments.lr, segments.bot, segments.ll, segments.ul).join(''),
+            1: signal.patterns[0].join(''),
+            2: _.union(segments.top, segments.ur, segments.mid, segments.ll, segments.bot).join(''),
+            3: _.union(segments.top, segments.ur, segments.mid, segments.lr, segments.bot).join(''),
+            4: signal.patterns[2].join(''),
+            5: _.union(segments.top, segments.ul, segments.mid, segments.lr, segments.bot).join(''),
+            6: _.union(segments.top, segments.ul, segments.mid, segments.ll, segments.lr, segments.bot).join(''),
+            7: signal.patterns[1].join(''),
+            8: signal.patterns[9].join(''),
+            9: _.union(segments.top, segments.ul, segments.ur, segments.mid, segments.lr, segments.bot).join('')
+        }
         
-        countOfEasy += _.filter(signal.output, out => out.length === 2 || out.length === 3 || out.length === 4 || out.length === 7).length;
+
+        _.forEach(signal.output, output => {
+            let ans = _.filter(decoded, num => { 
+                return (num.length === output.length) && (new Set(num).size === new Set(num+output).size)
+            });
+            
+            code += Object.keys(decoded).find(key => decoded[key] === ans[0]);
+        })
+        countOfHard += Number(code);
     })
-    return countOfEasy;
+    return countOfHard;
 }
 
-// console.log("Part 1 - " + part1(testInput));
-console.log("Part 2 - " + part2(testInput));
+console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(input));

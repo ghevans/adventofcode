@@ -200,9 +200,9 @@ eafgbd afcbeg cdfabge acdbf gfbec cgbefd edf de dceg decfb | def ecdg abfgde de
 ea fdabg fbdcgea cebfda fcbgde abgdec dae ebdfa eacf bcedf | acfe afce bgfda ade`.split('\n').map(row => {
     let parts = row.split(' | ');
     return {
-        pattern: parts[0].split(' '),
+        patterns: parts[0].split(' ').map(p => p.split('').sort()).sort((a,b) => a.length - b.length),
         output: parts[1].split(' '),
-        set: new Set()
+        map: buildMap()
     }
 });
 
@@ -216,9 +216,7 @@ fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fad
 dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
 bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
 egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
-gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce`;
-
-testInput = `acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf`.split('\n').map(row => {
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce`.split('\n').map(row => {
     let parts = row.split(' | ');
     return {
         patterns: parts[0].split(' ').map(p => p.split('').sort()).sort((a,b) => a.length - b.length),
