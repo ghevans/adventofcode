@@ -36,7 +36,7 @@ function dfs(map, startX, startY) {
     let stack = [];
     stack.push([startY, startX]);
 
-    while(stack.length !== 0) {
+    while(stack.length > 0) {
         let loc = stack.pop();
         if (!visited[`${loc[0]},${loc[1]}`]) {
             basinSize++;
