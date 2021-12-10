@@ -2,9 +2,17 @@ const _ = require('lodash');
 const {input, testInput} = require('./input');
 
 function part1(map) {
-    // console.log(map)
+    return Object.values(findLowPoints(map)).reduce((acc, val) => acc  + val + 1, 0);
+}
 
-    let totalRisk = 0;
+function part2(map) {
+    let lowPoints = findLowPoints(map);
+    console.log(lowPoints);
+    print(map);
+}
+
+function findLowPoints(map) {
+    let lowPoints = {};
     for (let y = 0; y < map.length; y++) {
         for (let x = 0; x < map[0].length; x++) {
             let height =  map[y][x];
@@ -14,18 +22,28 @@ function part1(map) {
             let right = map[y]?.[x+1] ?? 10;
 
             if (height < up && height < down && height < left && height < right) {
-                // console.log(`\t${up}\n${left}\t${map[y][x]}\t${right}\n\t${down}`)
-                // console.log(`LOW POINT FOUND\n`)
-                totalRisk += height+1;
+                lowPoints[`${y},${x}`] = height;
             }
         }
     }
-    return totalRisk;
+    return lowPoints
 }
 
-function part2(input) {
-    return "tbd";
+function print(map) {
+    let output = "";
+    for (let y = 0; y < map.length; y++) {
+        let row = "";
+        for (let x = 0; x < map[0].length; x++) {
+            if (map[y][x] !== 9) {
+                row += `${map[y][x]}`;
+            } else {
+                row += '*'
+            }
+        }
+        output += `${row}\n`;
+    }
+    console.log(output)
 }
 
-console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(input));
+// console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(testInput));
