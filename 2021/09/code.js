@@ -7,8 +7,44 @@ function part1(map) {
 
 function part2(map) {
     let lowPoints = findLowPoints(map);
-    console.log(lowPoints);
-    print(map);
+    let locs = Object.keys(lowPoints).map(key => { return { x: Number(key.split(',')[1]), y: Number(key.split(',')[0]) }});
+
+    let basins = []
+    for(loc of locs) {
+        basins.push(dfs(map, loc.x, loc.y));
+    }
+    basins.sort((a,b) => b-a);
+    return basins[0]*basins[1]*basins[2];
+}
+
+function getAdjacent(map, y, x, visited) {
+    let adj = [];
+    let dy = [0,-1,0,1] // l,u,r,d
+    let dx = [-1,0,1,0] // l,u,r,d
+    for(let i = 0; i < 4; i++) {
+        let next = map[y+dy[i]]?.[x+dx[i]];
+        if(next !== undefined && next != 9 && visited[`${y+dy[i]},${x+dx[i]}`] !== true) {
+            adj.push([y+dy[i], x+dx[i]])
+        }
+    }
+    return adj;
+}
+
+function dfs(map, startX, startY) {
+    let basinSize = 0;
+    let visited = {};
+    let stack = [];
+    stack.push([startY, startX]);
+
+    while(stack.length !== 0) {
+        let loc = stack.pop();
+        if (!visited[`${loc[0]},${loc[1]}`]) {
+            basinSize++;
+            visited[`${loc[0]},${loc[1]}`] = true;
+            stack.push(...getAdjacent(map, loc[0], loc[1], visited));
+        }
+    }
+    return basinSize;
 }
 
 function findLowPoints(map) {
@@ -45,5 +81,5 @@ function print(map) {
     console.log(output)
 }
 
-// console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput));
+console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(input));
