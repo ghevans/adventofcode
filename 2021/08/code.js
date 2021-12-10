@@ -1,17 +1,6 @@
 const _ = require('lodash');
 const {input, testInput} = require('./input');
 
-let somethign = {
-    top: [0,2,3,5,6,7,8,9], // all but 1
-    ul: [0,4,5,6,8,9],
-    ur: [0,1,2,3,4,7,8,9], // all but 5,6
-    mid: [2,3,4,5,6,8,9],
-    ll: [0,2,6,8],
-    lr: [0,1,3,4,5,6,7,8,9], // all but 2
-    bot: [0,2,3,5,6,8,9]
-}
-
-
 function part1(input) {
     let countOfEasy = 0;
     _.forEach(input, signal => {
