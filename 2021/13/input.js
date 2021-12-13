@@ -979,7 +979,7 @@ let input = `1160,528
 151,94
 1091,518
 1114,749
-8,800`.split('\n').map(point => point.split(','))
+8,800`.split('\n').map(point => point.split(',').map(Number));
 
 let inst = `fold along x=655
 fold along y=447

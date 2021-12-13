@@ -63,11 +63,11 @@ function foldPaper(points, rules, count) {
 function print(paper) {
     let output = "";
     for (let y = 0; y < paper.length; y++) {
-        let row = "";
+        let row = "\n";
         for (let x = 0; x < paper[0].length; x++) {
             row += `${paper[y][x]} `;
         }
-        output += `${row}\n`;
+        output += `${row}`;
     }
     console.log(output)
 }
