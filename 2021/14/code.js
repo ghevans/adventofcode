@@ -42,10 +42,10 @@ function getOccurrences(poly) {
 function part2(template, rules, loops) {
     let polyMap = buildPolyMap(template);
     let countMap = new Map();
+    let lastChar = template[template.length-1];
 
     for (let i = 0; i < loops; i++) {
         let nextPolyMap = new Map();
-        let lastAdded = '';
         countMap.clear();
 
         polyMap.forEach((value, key) => {
@@ -61,7 +61,7 @@ function part2(template, rules, loops) {
 
             lastAdded = key[1];
         });
-
+        countMap.set(lastChar, (countMap.get(lastChar) ?? 0) + 1); // Increment the count for the last character (which never changes) 
         polyMap = nextPolyMap;
     }
     
@@ -78,4 +78,4 @@ function buildPolyMap(template) {
 }
 
 console.log("Part 1 - " + part1(template, input, 10));
-console.log("Part 2 - " + part2(template, input, 40)); // <-- this gives the wrong answer (too high by 1) correct => 2967977072188
+console.log("Part 2 - " + part2(template, input, 40));
