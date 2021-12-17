@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const dijkstra = require('../../node_modules/dijkstrajs');
+const dijkstra = require('dijkstrajs');
 const {input, testInput} = require('./input');
 
 function part1(map) {
