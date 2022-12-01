@@ -1,3 +1,4 @@
-let input = [];
+let input = ``;
+let testInput = ``;
 
-module.exports = input;
+module.exports = {input, testInput};

@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const input = require('./input');
+const {input, testInput} = require('./input');
 
 function part1(input) {
     return "tbd";

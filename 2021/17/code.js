@@ -3,9 +3,7 @@ const {input, testInput} = require('./input');
 
 function runSim(target) {
 
-    let bestOverall = {
-        maxHeight: 0
-    };
+    let bestOverall;
     let totalHits = 0;
 
     for (let y = -1000; y < 1000; y++) {
@@ -27,7 +25,7 @@ function runSim(target) {
                     break;
                 } else if (hitTarget(probe, target)) {
                     // console.log(`HIT TARGET for: [${probe.x},${probe.y}] with maxHeight ${probe.maxHeight}`)
-                    bestOverall = (probe.maxHeight > bestOverall.maxHeight) ? probe : bestOverall;
+                    bestOverall = (probe.maxHeight > (bestOverall?.maxHeight ?? 0)) ? probe : bestOverall;
                     totalHits++;
                     break;
                 }
