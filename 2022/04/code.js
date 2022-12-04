@@ -1,11 +1,9 @@
-const _ = require('lodash');
 const {input, testInput} = require('./input');
 
 function part1(input) {
     let overlaps = input.split('\n')
                         .map(parseRange)
                         .filter(isContained);
-    
     return overlaps.length;
 }
 
@@ -17,14 +15,15 @@ function part2(input) {
 }
 
 function parseRange(pair) {
-    let p = pair.split(',').map(elf => {
-        let e = elf.split('-');
-        return {
-            start: Number(e[0]),
-            end: Number(e[1])
-        }
-    });
+    let p = pair.split(',').map(parseElf);
     return p;
+}
+
+function parseElf(elf) {
+    return {
+        start: Number(elf.split('-')[0]),
+        end: Number(elf.split('-')[1])
+    }
 }
 
 function isContained(pair) {
