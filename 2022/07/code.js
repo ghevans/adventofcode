@@ -17,9 +17,9 @@ class Command {
 function buildTree(commands) {
     let currentNode = new Command('/', 0, null);
     let tree = {};
-    let dirs = new Set('/');
+    let dirs = ['/'];
     tree[currentNode.name] = currentNode;
-
+    
     commands.forEach(command => {
         let parts = command.split(' ');
         if (command === '$ cd /') {
@@ -27,15 +27,17 @@ function buildTree(commands) {
         } else if (command === '$ cd ..') {
             currentNode = tree[currentNode.parent];
         } else if (command.startsWith('$ cd')) {
-            currentNode = tree[parts[2]];
+            currentNode = tree[currentNode.name+'.'+parts[2]];
         } else if (command === '$ ls') {
             // do nothing
         } else {
             let size = (parts[0] === 'dir') ? 0 : Number(parts[0]);
-            if (size === 0) { dirs.add(parts[1])}
-            tree[parts[1]] = new Command(parts[1], size, currentNode.name);
-            currentNode.addChild(parts[1]);
-        }
+            let key = `${currentNode.name}.${parts[1]}`;
+
+            if (size === 0) { dirs.push(key)}
+            tree[key] = new Command(key, size, currentNode.name);
+            currentNode.addChild(key);
+        }    
     });
 
     return [tree, dirs];
@@ -43,8 +45,8 @@ function buildTree(commands) {
 
 function part1(input) {
     let [tree, dirs] = buildTree(input.split('\n'));
-    let dirSize = [...dirs].map(dir => {
-        console.log(tree[dir])
+
+    let dirSize = dirs.map(dir => {
         return {
             dir: dir,
             size: getDirSize(tree, tree[dir], 0)
