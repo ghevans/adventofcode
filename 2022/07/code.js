@@ -19,7 +19,7 @@ function buildTree(commands) {
     let tree = {};
     let dirs = ['/'];
     tree[currentNode.name] = currentNode;
-    
+
     commands.forEach(command => {
         let parts = command.split(' ');
         if (command === '$ cd /') {
@@ -45,15 +45,10 @@ function buildTree(commands) {
 
 function part1(input) {
     let [tree, dirs] = buildTree(input.split('\n'));
-
-    let dirSize = dirs.map(dir => {
-        return {
-            dir: dir,
-            size: getDirSize(tree, tree[dir], 0)
-        }
-    })
-    .filter(dir => dir.size <= 100000)
-    .reduce((a,b) => a + b.size, 0);
+    
+    let dirSize = getDirectories(tree, dirs)
+                    .filter(dir => dir.size <= 100000)
+                    .reduce((a,b) => a + b.size, 0);
 
     return dirSize;
 }
@@ -70,9 +65,26 @@ function getDirSize(tree, currentNode, currentSize) {
     return currentSize;
 }
 
+function getDirectories(tree, dirs) {
+    return dirs.map(dir => {
+        return {
+            dir: dir,
+            size: getDirSize(tree, tree[dir], 0)
+        }
+    })
+}
+
 function part2(input) {
-    return "tbd";
+    let totalDisk = 70000000;
+    let spaceNeeded = 30000000;
+    let [tree, dirs] = buildTree(input.split('\n'));
+    let dirSize = getDirectories(tree, dirs);
+
+    let amountToFind = spaceNeeded - (totalDisk - dirSize.filter(d => d.dir === '/')[0].size);
+
+    dirSize = dirSize.filter(d => d.size >= amountToFind)
+    return _.sortBy(dirSize, "size")[0].size;
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(input));
+console.log("Part 2 - " + part2(input));
