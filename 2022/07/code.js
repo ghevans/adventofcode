@@ -14,18 +14,14 @@ class Command {
     }
 }
 
-function part1(input) {
-    let commands = input.split('\n');
-    console.log(commands)
-
+function buildTree(commands) {
     let currentNode = new Command('/', 0, null);
     let tree = {};
+    let dirs = new Set('/');
     tree[currentNode.name] = currentNode;
-    console.log(tree);
 
     commands.forEach(command => {
         let parts = command.split(' ');
-        console.log(command);
         if (command === '$ cd /') {
             currentNode = tree['/'];
         } else if (command === '$ cd ..') {
@@ -36,17 +32,45 @@ function part1(input) {
             // do nothing
         } else {
             let size = (parts[0] === 'dir') ? 0 : Number(parts[0]);
+            if (size === 0) { dirs.add(parts[1])}
             tree[parts[1]] = new Command(parts[1], size, currentNode.name);
             currentNode.addChild(parts[1]);
         }
     });
-    console.log(tree);
-    return "tbd";
+
+    return [tree, dirs];
+}
+
+function part1(input) {
+    let [tree, dirs] = buildTree(input.split('\n'));
+    let dirSize = [...dirs].map(dir => {
+        console.log(tree[dir])
+        return {
+            dir: dir,
+            size: getDirSize(tree, tree[dir], 0)
+        }
+    })
+    .filter(dir => dir.size <= 100000)
+    .reduce((a,b) => a + b.size, 0);
+
+    return dirSize;
+}
+
+function getDirSize(tree, currentNode, currentSize) {
+    if (currentNode.children.length === 0) {
+        return currentSize + currentNode.size
+    }
+
+    for(child of currentNode.children) {
+        currentSize = getDirSize(tree, tree[child], currentSize);
+    }
+
+    return currentSize;
 }
 
 function part2(input) {
     return "tbd";
 }
 
-console.log("Part 1 - " + part1(testInput));
+console.log("Part 1 - " + part1(input));
 // console.log("Part 2 - " + part2(input));
