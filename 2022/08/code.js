@@ -42,8 +42,43 @@ function print(map) {
 }
 
 function part2(input) {
-    return "tbd";
+    let map = input.split('\n').map(row => row.split('').map(Number));
+    let scoreMap = new Array(map.length).fill(0).map(() => new Array(map[0].length).fill(0));
+
+    for(let y = 1; y < map.length-1; y++) {
+        for (let x = 1; x < map[0].length-1; x++) {
+            let rowScore = getScoreForRow(map[y], x);
+            let colScore = getScoreForRow(map.map(row => { return row[x]}), y);
+
+            scoreMap[y][x] = rowScore * colScore;
+        }
+    }
+    
+    return Math.max.apply(null, scoreMap.map(row => Math.max.apply(Math, row)));
+}
+
+const getScoreForRow = function(row, x) {
+    let val = row[x];
+    let left = row.slice(0,x).reverse();
+    let leftScore = 0;
+    for (let i = 0; i < left.length; i++) {
+        leftScore++;
+        if (left[i] >= val) {
+            break;
+        }
+    }
+
+    let right = row.slice(x+1);
+    let rightScore = 0;
+    for (let i = 0; i < right.length; i++) {
+        rightScore++;
+        if (right[i] >= val) {
+            break;
+        }
+    }
+    
+    return leftScore * rightScore;
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(input));
+console.log("Part 2 - " + part2(input));
