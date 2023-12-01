@@ -1004,4 +1004,12 @@ pqr3stu8vwx
 a1b2c3d4e5f
 treb7uchet`;
 
-module.exports = {input, testInput};
+let testInput2 = `two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen`
+
+module.exports = {input, testInput, testInput2};
