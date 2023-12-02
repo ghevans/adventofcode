@@ -30,15 +30,45 @@ function part1(input) {
             })
         })
         
-        console.log(`Game: ${game.id} => ${valid}`);
+        // console.log(`Game: ${game.id} => ${valid}`);
         if (valid) { sumOfValid+= game.id; }
     })
     return sumOfValid;
 }
 
 function part2(input) {
-    return "tbd";
+    let sumPower = 0;
+    
+    input.forEach(game => {
+        let minR = minG = minB = 0;
+        game.draws.forEach(draw => {
+            draw.forEach(set => {
+                switch(set.color) {
+                    case 'red':
+                        if (set.num > minR ) {
+                            minR = set.num;
+                        }
+                        break;
+                    case 'green':
+                        if (set.num > minG ) {
+                            minG = set.num;
+                        }
+                        break;
+                    case 'blue':
+                        if (set.num > minB ) {
+                            minB = set.num;
+                        }
+                        break;
+                }
+            })
+        })
+        let power = minR * minG * minB;
+        console.log(`Game: ${game.id} => power = ${power}`);
+        
+        sumPower += power;
+    })
+    return sumPower;
 }
 
-console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(input));
+// console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(input));
