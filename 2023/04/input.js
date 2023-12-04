@@ -221,8 +221,9 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11`.split('\n').map(buildCard);
 
 
 function buildCard(line) {
+    let temp = line.split(':')[0].split(' ');
     return {
-        num: line.split(':')[0].split(' ')[1],
+        num: Number(temp[temp.length-1]),
         winners: line.split(': ')[1].split(' | ')[0].split(' ').filter(n => n > 0).map(Number),
         numbers: line.split(': ')[1].split(' | ')[1].split(' ').filter(n => n > 0).map(Number)
     }
