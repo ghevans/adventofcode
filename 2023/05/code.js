@@ -48,10 +48,13 @@ function part1(input) {
 function part2(input) {
     let minSeed = Infinity;
     let currentMin = Infinity;
-
+    let totalIters = 0;
     for(let i = 0; i < input.seeds.length; i+=2) {
         let chunk = input.seeds.slice(i, i+2);
-        console.log(`starting chunk from ${chunk[0]} to ${chunk[0]+chunk[1]-1}`)
+        console.log(`======\nStarting chunk from ${chunk[0]} to ${chunk[0]+chunk[1]-1}`)
+        let localMin = Infinity;
+        let localMinSeed = Infinity;
+        let iter = 0;
         for(let seedNum = chunk[0]; seedNum < chunk[0] + chunk[1]; seedNum++) {
             let current = seedNum;
 
@@ -60,7 +63,7 @@ function part2(input) {
                 let valid = false;
                 for (part of lines) {
                     let next = 0;
-                    if ((current <= part.source + part.range) && current >= part.source) {
+                    if ((current < part.source + part.range) && current >= part.source) {
                         valid = true;
                         next = part.dest + (current - part.source);
                     }
@@ -73,17 +76,25 @@ function part2(input) {
             }
 
             if(current < currentMin) {
-                console.log(`working on seed ${seedNum} updating currentMin from ${currentMin} to ${current}`)
+                console.log(`\tUpdating currentMin from ${currentMin} to ${current} (seed ${seedNum})`)
                 minSeed = seedNum;
                 currentMin = current;
             }
+
+            if(current < localMin) {
+                localMinSeed = seedNum;
+                localMin = current;
+            }
+            totalIters++;
+            iter++
         }
-        console.log(`minimum for this range was ${minSeed} with location ${currentMin}`)
+        console.log(`\t\tMinimum for this range was ${localMinSeed} with location ${localMin}`)
+        console.log(`Completed ${iter} loops vs. expected ${chunk[1]}`);
     }
-    
-    // console.log(locations)
+    console.log(`Overall min location was ${minSeed} with location ${currentMin}`)
+    console.log(`Total Iterations was ${totalIters}`)
     return currentMin;
 }
 
 // console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
