@@ -46,8 +46,44 @@ function part1(input) {
 }
 
 function part2(input) {
-    return "tbd";
+    let minSeed = Infinity;
+    let currentMin = Infinity;
+
+    for(let i = 0; i < input.seeds.length; i+=2) {
+        let chunk = input.seeds.slice(i, i+2);
+        console.log(`starting chunk from ${chunk[0]} to ${chunk[0]+chunk[1]-1}`)
+        for(let seedNum = chunk[0]; seedNum < chunk[0] + chunk[1]; seedNum++) {
+            let current = seedNum;
+
+            for (step of steps) {
+                let lines = input[step];
+                let valid = false;
+                for (part of lines) {
+                    let next = 0;
+                    if ((current <= part.source + part.range) && current >= part.source) {
+                        valid = true;
+                        next = part.dest + (current - part.source);
+                    }
+    
+                    if(valid) { 
+                        current = next;
+                        break; 
+                    }
+                }
+            }
+
+            if(current < currentMin) {
+                console.log(`working on seed ${seedNum} updating currentMin from ${currentMin} to ${current}`)
+                minSeed = seedNum;
+                currentMin = current;
+            }
+        }
+        console.log(`minimum for this range was ${minSeed} with location ${currentMin}`)
+    }
+    
+    // console.log(locations)
+    return currentMin;
 }
 
-console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+// console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(testInput));
