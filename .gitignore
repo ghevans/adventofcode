@@ -117,3 +117,6 @@ dist
 
 # node modules
 node_modules
+
+# input info
+**/input.js
