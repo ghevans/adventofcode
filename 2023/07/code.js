@@ -43,29 +43,14 @@ const cardRankWithJokers = {
     'J' : 1,
 }
 
-function part1(deck) {
+function calculateWinngs(deck, jokersWild) {
     for (hand of deck) {
-        hand['type'] = determineHand(hand.cards);
+        hand['type'] = determineHand(hand.cards, jokersWild);
     }
-    deck = sortDeck(deck, cardRank);
+    deck = (jokersWild) ? sortDeck(deck, cardRankWithJokers) : sortDeck(deck, cardRank);
 
     let winnings = 0;
     for(let i = 0; i < deck.length; i++) {
-        winnings += (deck[i].bid * (i+1));
-    }
-    return winnings;
-}
-
-function part2(deck) {
-    for (hand of deck) {
-        hand['type'] = determineHand(hand.cards);
-    }
-    deck = sortDeck(deck, cardRankWithJokers);
-    console.log(deck);
-    
-    let winnings = 0;
-    for(let i = 0; i < deck.length; i++) {
-        // console.log(`${deck[i].cards} is rank ${i+1} winning ${deck[i].bid * (i+1)} `)
         winnings += (deck[i].bid * (i+1));
     }
     return winnings;
@@ -89,8 +74,26 @@ function sortDeck(deck, cardRank) {
     })
 }
 
-function determineHand(cards) {
+
+function determineHand(cards, jokersWild) {
     let parts = cards.split('').reduce((a, char) => (a[char] = (a[char] || 0) + 1, a), {});
+    if (jokersWild && Object.keys(parts).includes('J')) {
+        let numJokers = parts['J'];
+        delete parts['J'];
+        if (numJokers === 5) {
+            parts['A'] = 5;
+        } else {
+            let bestUse = Object.keys(parts).reduce((a, b) => {
+                if (parts[a] === parts[b]) {
+                    return (cardRankWithJokers[a] > cardRankWithJokers[b]) ? a : b;
+                } else {
+                    return parts[a] > parts[b] ? a : b;
+                }
+            });
+            parts[bestUse] += numJokers;
+        }
+    }
+    
     let maxSet = _.max(Object.values(parts))
     switch(Object.entries(parts).length) {
         case 1: // 5 of a kind
@@ -107,5 +110,5 @@ function determineHand(cards) {
     return "unknown"
 }
 
-// console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput));
+console.log("Part 1 - " + calculateWinngs(input, false));
+console.log("Part 2 - " + calculateWinngs(input, true));
