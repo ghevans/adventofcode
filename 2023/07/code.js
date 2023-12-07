@@ -58,12 +58,6 @@ function calculateWinngs(deck, jokersWild) {
 
 function sortDeck(deck, cardRank) {
     return deck.sort((hand1, hand2) => {
-        if(rankMap[hand1.type] > rankMap[hand2.type]) {
-            return 1;
-        }
-        if(rankMap[hand1.type] < rankMap[hand2.type]) {
-            return -1;
-        }
         if(rankMap[hand1.type] === rankMap[hand2.type]) {
             for(let i = 0; i < hand1.cards.length; i++) {
                 if (cardRank[hand1.cards[i]] != cardRank[hand2.cards[i]]) {
@@ -71,9 +65,9 @@ function sortDeck(deck, cardRank) {
                 }
             }
         }
+        return (rankMap[hand1.type] > rankMap[hand2.type]) ? 1 : -1;
     })
 }
-
 
 function determineHand(cards, jokersWild) {
     let parts = cards.split('').reduce((a, char) => (a[char] = (a[char] || 0) + 1, a), {});
@@ -86,9 +80,8 @@ function determineHand(cards, jokersWild) {
             let bestUse = Object.keys(parts).reduce((a, b) => {
                 if (parts[a] === parts[b]) {
                     return (cardRankWithJokers[a] > cardRankWithJokers[b]) ? a : b;
-                } else {
-                    return parts[a] > parts[b] ? a : b;
                 }
+                return parts[a] > parts[b] ? a : b;
             });
             parts[bestUse] += numJokers;
         }
@@ -104,10 +97,9 @@ function determineHand(cards, jokersWild) {
             return (maxSet === 3) ? '3oC' : '2P';
         case 4: // 1 pair
             return '1P';
-        case 5: // high card
+        default: // high card
             return 'HC';
     }
-    return "unknown"
 }
 
 console.log("Part 1 - " + calculateWinngs(input, false));
