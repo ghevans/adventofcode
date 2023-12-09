@@ -47,3 +47,4 @@ function findPrev(input) {
 
 console.log("Part 1 - " + part1(input));
 console.log("Part 2 - " + part2(input));
+console.log("Part 2b - " + part1(input.map(n => n.reverse()))); // <--- this is so much better, I just didn't think of it that way
