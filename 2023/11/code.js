@@ -1,70 +1,53 @@
 const _ = require('lodash');
 const {input, testInput} = require('./input');
 
-function part1(input) {
-    let [galaxies, universe] = expand(input);
+const isEmpty = (row) => row.every(c => c === '.');
+const rotate90 = (universe) => { return universe[0].map((val, index) => universe.map(row => row[index]).reverse()); }
 
-    return _.sum(Object.values(getDistances(galaxies)));
+function expand(input, expansionFactor) {
+    let [galaxies, rows, cols] = bigExpand(input);
+
+    return _.sum(Object.values(getBigDistances(galaxies, rows, cols, expansionFactor)));
 }
 
-function getDistances(galaxies) {
+function bigExpand(universe) {
+    const galaxies = universe.split('\n')
+                            .flatMap((row, y) => row.split('').map((c, x) => ({ y: y, x: x, char: c})))
+                            .filter(({char}) => char === '#')
+
+    const rowsToAdd = universe.split('\n')
+                    .map((row, y) => ({row: row.split(''), y}))
+                    .filter(({row}) => isEmpty(row))
+                    .map(({y}) => y)
+
+    const colsToAdd = rotate90(universe.split('\n').map(r => r.split('')))
+                .map((col, x) => ({col, x}))
+                .filter(({col}) => isEmpty(col))
+                .map(({x}) => x);
+    
+    return [galaxies, rowsToAdd, colsToAdd];
+}
+
+function getBigDistances(galaxies, rows, cols, expansionFactor) {
     let dists = {};
     for (let i = 0; i < galaxies.length; i++) {
         let curG = galaxies[i];
         for (let j = i+1; j < galaxies.length; j++) {
             let otherG = galaxies[j];
-            dists[`${i+1},${j+1}`] = Math.abs(curG.x - otherG.x) + Math.abs(curG.y - otherG.y)
+
+            dists[`${i+1},${j+1}`] = (Math.abs(curG.x - otherG.x) + Math.abs(curG.y - otherG.y)) + 
+                                        checkForExpansionZones(curG.y, otherG.y, rows)*((expansionFactor > 1) ? expansionFactor-1 : 1) + 
+                                        checkForExpansionZones(curG.x, otherG.x, cols)*((expansionFactor > 1) ? expansionFactor-1 : 1);
         }
     }
-
     return dists;
 }
 
-function expand(universe) {
-    let current = universe.split('\n').map(row => row.split(''));
-    let galaxies = [];
-    let expanded = [];
-    for (let y = 0; y < current.length; y++) {
-        let row = [];
-        if (current[y].every(c => c === '.')) {
-            for (let x = 0; x < current[0].length; x++) {
-                row[x] = '.';
-            }
-            expanded.push(row);
-        }
-
-        for (let x = 0; x < current[0].length; x++) {
-            row[x] = current[y][x];
-        }
-        expanded.push(row);
-    }
-
-    let colsToAdd = [];
-    for (let x = 0; x < expanded[0].length; x++) {
-        let col = expanded.map(c => c[x]);
-        if (col.every(c => c === '.')) {
-            colsToAdd.push(x);
-        }
-    }
-
-    for(col of colsToAdd.reverse()) {
-        for (let y = 0; y < expanded.length; y++) {
-            expanded[y].splice(col, 0, '.');
-        }
-    }
-
-    for (let y = 0; y < expanded.length; y++) {
-        for (let x = 0; x < expanded[0].length; x++) {
-            if (expanded[y][x] === '#') {
-                galaxies.push({y: y, x: x}); 
-            }
-        }
-    }
-
-    return [galaxies, expanded];
+function checkForExpansionZones(current, other, vals) {
+    return vals.filter(val => (val > Math.min(current, other) && val < Math.max(current, other))).length;
 }
 
-function print(universe) {
+const print = (universe) => {
     let out = '';
     for(let y = 0; y < universe.length; y++) {
         let row = '';
@@ -76,14 +59,5 @@ function print(universe) {
     console.log(out);
 }
 
-function part2(input) {
-    return "tbd";
-}
-
-function bigExpand(universe) {
-    let start = universe.split('\n').map(r => r.split(''));
-    console.log(start);
-}
-
-console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 1 - " + expand(input, 1));
+console.log("Part 2 - " + expand(input, 1000000));
