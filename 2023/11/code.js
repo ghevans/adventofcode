@@ -36,8 +36,8 @@ function getBigDistances(galaxies, rows, cols, expansionFactor) {
             let otherG = galaxies[j];
 
             dists[`${i+1},${j+1}`] = (Math.abs(curG.x - otherG.x) + Math.abs(curG.y - otherG.y)) + 
-                                        checkForExpansionZones(curG.y, otherG.y, rows)*((expansionFactor > 1) ? expansionFactor-1 : 1) + 
-                                        checkForExpansionZones(curG.x, otherG.x, cols)*((expansionFactor > 1) ? expansionFactor-1 : 1);
+                                        checkForExpansionZones(curG.y, otherG.y, rows)*(expansionFactor) + 
+                                        checkForExpansionZones(curG.x, otherG.x, cols)*(expansionFactor);
         }
     }
     return dists;
@@ -60,4 +60,4 @@ const print = (universe) => {
 }
 
 console.log("Part 1 - " + expand(input, 1));
-console.log("Part 2 - " + expand(input, 1000000));
+console.log("Part 2 - " + expand(input, 999999));
