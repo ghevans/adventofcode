@@ -52,7 +52,7 @@ const unfold = (input) => {
 
 class Possibility {
     constructor(curGroup, curCount, arrangements) {
-        this.curGroup = curGroup,
+        this.curGroup = curGroup;
         this.curCount = curCount;
         this.arrangements = arrangements;
     }
