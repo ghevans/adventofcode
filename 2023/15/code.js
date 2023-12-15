@@ -1,11 +1,7 @@
 const _ = require('lodash');
 const {input, testInput} = require('./input');
 
-function part1(sequence) {
-    return sequence.map(part => getHash(part)).reduce((a,b) => a+b, 0);
-}
-
-function getHash(part) {
+const getHash = (part) => {
     let hash = 0;
     for (char of part) {
         if (['-', '='].includes(char)) {
@@ -19,27 +15,36 @@ function getHash(part) {
     return hash;
 }
 
+const buildInst = (part) => {
+    let locOfSymbol = (part.indexOf('=') > -1) ? part.indexOf('=') : part.indexOf('-');
+    return {
+        label : part.slice(0, locOfSymbol).join(''),
+        box : getHash(part),
+        oper : (part.indexOf('=') > -1) ? '=' : '-',
+        focalLength : (part.indexOf('=') > -1) ? Number(part[locOfSymbol+1]) : -1
+    }
+}
 
-const findLabel = (label, box) => {
-    for (let i = 0; i < box.length; i++) {
-        if (box[i].label === label) {
-            return i;
+const findLabel = (label, box) => { return box.findIndex(b => b.label === label); }
+
+const getPower = (boxes) => {
+    boxes = boxes.map((box, index) => [index, box]).filter(([index, box]) => box.length > 0);
+    let power = 0;
+    for ([boxNum, boxList] of boxes) {
+        for (let i = 0; i < boxList.length; i++) {
+            power += (1+boxNum) * (i+1) * boxList[i].focalLength;
         }
     }
-    return -1;
+    return power;
+}
+
+function part1(sequence) {
+    return sequence.map(part => getHash(part)).reduce((a,b) => a+b, 0);
 }
 
 function part2(sequence) {
     let boxes = Array.from(Array(256), () => new Array())
-    const instructions = sequence.map(part => {
-        let locOfSymbol = (part.indexOf('=') > -1) ? part.indexOf('=') : part.indexOf('-');
-        return {
-            label : part.slice(0, locOfSymbol).join(''),
-            box : getHash(part),
-            oper : (part.indexOf('=') > -1) ? '=' : '-',
-            focalLength : (part.indexOf('=') > -1) ? Number(part[locOfSymbol+1]) : -1
-        }
-    });
+    const instructions = sequence.map(buildInst);
 
     for (inst of instructions) {
         let curBox = boxes[inst.box];
@@ -65,15 +70,8 @@ function part2(sequence) {
                 break;
         }
     }
-    boxes = boxes.map((box, index) => [index, box]).filter(([index, box]) => box.length > 0);
-    let power = 0;
-    for ([boxNum, boxList] of boxes) {
-        for (let i = 0; i < boxList.length; i++) {
-            power += (1+boxNum) * (i+1) * boxList[i].focalLength;
-        }
-    }
     
-    return power;
+    return getPower(boxes);
 }
 
 
