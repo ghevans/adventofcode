@@ -23,7 +23,7 @@ const leavingGrid = (beam, grid) => {
     }
 }
 
-const nextLoc = (beam, grid) => {
+const nextLoc = (beam) => {
     switch (beam.dir) {
         case 'u':
             return {y: beam.y-1, x: beam.x};
@@ -36,23 +36,21 @@ const nextLoc = (beam, grid) => {
     }
 }
 
-function part1(grid) {
-    // console.log(helper.print(grid))
-    let activeBeams = [new Beam(0,-1,'r')]
+const determinePower  = (grid, startingBeam) => {
+    let activeBeams = [startingBeam];
     let visited = {};
     let visitedGrid = Array.from(Array(grid.length), () => new Array(grid[0].length).fill('.'))
 
-    let i = 0;
     while (activeBeams.length > 0) {
         let nextBeams = [];
         for (beam of activeBeams) {
             if (!visited[`${beam.y},${beam.x},${beam.dir}`]) {
-                visitedGrid[beam.y][beam.x] = '#'
-                visited[`${beam.y},${beam.x},${beam.dir}`] = `${beam.y},${beam.x}`;
-                if (leavingGrid(beam, grid)) {
-                    // console.log(`\tleaving grid for beam at ${beam.y},${beam.x}`)
-                } else {
-                    const next = nextLoc(beam, grid);
+                if (visitedGrid[beam.y]?.[beam.x]) {
+                    visitedGrid[beam.y][beam.x] = '#';
+                    visited[`${beam.y},${beam.x},${beam.dir}`] = `${beam.y},${beam.x}`;
+                }
+                if (!leavingGrid(beam, grid)) {
+                    const next = nextLoc(beam);
                     switch(grid[next.y][next.x]) {
                         case '|':
                             if (['l','r'].includes(beam.dir)) {
@@ -115,9 +113,31 @@ function part1(grid) {
     return visitedGrid.flatMap(row => row.filter(c => c === '#')).length;
 }
 
+function part1(grid) {
+    return determinePower(grid, new Beam(0,-1,'r'))
+}
+
 function part2(grid) {
-    return "tbd";
+    let maxPower = 0;
+    for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid[0].length; x++) {
+            if (x === 0) {
+                maxPower = Math.max(maxPower, determinePower([...grid], new Beam(y, -1, 'r')))
+            }
+            if (x === grid[0].length - 1) {
+                maxPower = Math.max(maxPower, determinePower([...grid], new Beam(y, x+1, 'l')))
+            }
+            if (y === 0) {
+                maxPower = Math.max(maxPower, determinePower([...grid], new Beam(-1, x, 'd')))
+            }
+            if (y === grid.length - 1) {
+                maxPower = Math.max(maxPower, determinePower([...grid], new Beam(y+1, x, 'u')))
+            }
+        }
+    }
+
+    return maxPower;
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
