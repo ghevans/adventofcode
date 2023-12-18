@@ -76,14 +76,8 @@ function countLine(line) {
     return lineArea;
 }
 
-function countArea(map) {
-    let area = 0;
-    for (y = 0; y < map.length; y++) {
-        area += countLine(map[y]);
-
-    }
-    
-    return area;
+function countArea(grid) {
+    return grid.map(row => countLine(row)).reduce((a,b) => a+b, 0);
 }
 
 function format(map, print) {
@@ -141,7 +135,23 @@ function buildMap(map, print) {
 }
 
 function part2(input) {
-    return "tbd";
+    let rules = input.map(parseHex);
+    return part1(rules);
+}
+
+const dirMap = {
+    0: 'R',
+    1: 'D',
+    2: 'L',
+    3: 'U'
+}
+
+function parseHex(line) {
+    let val = line.color.substring(2,8);
+    return {
+        dir: dirMap[val[val.length-1]],
+        dist: parseInt(val.substring(0,val.length-1), 16)
+    }
 }
 
 console.log("Part 1 - " + part1(input));
