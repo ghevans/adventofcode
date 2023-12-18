@@ -14,4 +14,17 @@ const print = (map) => {
     return out;
 }
 
-module.exports = {print, rotate90, rotate180, rotate270};
+const getAdjacentByWeight = function(map, y, x, hueristic) {
+    let adj = {};
+    let dy = [0,-1,0,1] // l,u,r,d
+    let dx = [-1,0,1,0] // l,u,r,d
+    for(let i = 0; i < 4; i++) {
+        let next = map[y+dy[i]]?.[x+dx[i]];
+        if(next !== undefined && hueristic(map, y, x, hueristic)) {
+            adj[`${y+dy[i]},${x+dx[i]}`] = Number(next)
+        }
+    }
+    return adj;
+}
+
+module.exports = {print, rotate90, rotate180, rotate270, getAdjacentByWeight};
