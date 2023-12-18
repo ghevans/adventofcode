@@ -2,6 +2,36 @@ const _ = require('lodash');
 const {input, testInput} = require('./input');
 const helper = require('../../helpers')
 
+const dirMap = {
+    0: 'R',
+    1: 'D',
+    2: 'L',
+    3: 'U'
+}
+
+const parseHex = (line) => {
+    let val = line.color.substring(2,8);
+    return {
+        dir: dirMap[val[val.length-1]],
+        dist: parseInt(val.substring(0,val.length-1), 16)
+    }
+}
+
+const getInternalArea = (edges) => {
+    let sumOfProducts = 0;
+    let sumOfDifferences = 0;
+
+    for (let i = 0; i < edges.length; i++) {
+        let [y1, x1] = edges[i];
+        let [y2, x2] = edges[(i + 1) % edges.length];
+        sumOfProducts += x1 * y2;
+        sumOfDifferences += y1 * x2;
+    }
+
+    return (0.5 * Math.abs(sumOfProducts - sumOfDifferences));
+}
+
+
 function part1(plan) {
     const path = new Map();
     path.set(`0,0`, {y: 0, x: 0});
@@ -136,23 +166,35 @@ function buildMap(map, print) {
 
 function part2(input) {
     let rules = input.map(parseHex);
-    return part1(rules);
-}
+    let edges = [[0, 0]];
 
-const dirMap = {
-    0: 'R',
-    1: 'D',
-    2: 'L',
-    3: 'U'
-}
+    let curPos = edges[0];
+    let perimeter = 0;
+    for (move of rules) {
+        switch(move.dir) {
+            case 'U':
+                change = {y: -1, x: 0};
+                break;
+            case 'D':
+                change = {y: 1, x: 0};
+                break;
+            case 'L':
+                change = {y: 0, x: -1};
+                break;
+            case 'R':
+                change = {y: 0, x: 1};
+                break;
+        }
 
-function parseHex(line) {
-    let val = line.color.substring(2,8);
-    return {
-        dir: dirMap[val[val.length-1]],
-        dist: parseInt(val.substring(0,val.length-1), 16)
+        curPos[0] = curPos[0] + (change.y*move.dist);
+        curPos[1] = curPos[1] + (change.x*move.dist);
+
+        edges.push([curPos[0], curPos[1]]);
+        perimeter += move.dist;
     }
+
+    return (getInternalArea(edges) + (perimeter/2) + 1);
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
