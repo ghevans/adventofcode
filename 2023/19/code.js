@@ -86,25 +86,10 @@ function walkTree(prevPath, prevRanges, curLoc, workflows) {
 }
 
 function part2(workflows) {
-    let total = 0;
     workflows.set('A', null);
     workflows.set('R', null);
 
-    let rulesToEval = [...workflows.get('in').rules];
-    for (let i = 0; i < rulesToEval.length; i++) {
-        let rule = rulesToEval[i];
-        let ranges = new Ranges([1,4000],[1,4000],[1,4000],[1,4000]);
-
-        for(let j = 0; j < i; j++) {
-            let ruleToFlip = rulesToEval[j];
-            ranges[ruleToFlip.category] = ruleToFlip.notSelected(ranges[ruleToFlip.category]);
-        }
-
-        ranges[rule.category] = rule.selected(ranges[rule.category]);
-
-        total += walkTree('in', ranges, rule.nextWorkflow, workflows);
-    }
-    return total;
+    return walkTree('', new Ranges([1,4000],[1,4000],[1,4000],[1,4000]), 'in', workflows);
 }
 
 console.log("Part 1 - " + part1(realWorkflows, realParts));
