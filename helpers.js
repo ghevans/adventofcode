@@ -27,14 +27,29 @@ const getAdjacentByWeight = function(map, y, x, hueristic) {
     return adj;
 }
 
-const getAdjacentLocs = function(map, y, x) {
+const getAdjacentLocs = function(map, y, x, yLoops, xLoops, infiniteMap) {
     let adj = [];
     let dy = [0,-1,0,1] // l,u,r,d
     let dx = [-1,0,1,0] // l,u,r,d
     for(let i = 0; i < 4; i++) {
         let next = map[y+dy[i]]?.[x+dx[i]];
         if(next !== undefined) {
-            adj.push([y+dy[i], x+dx[i]]);
+            adj.push([y+dy[i], x+dx[i], yLoops, xLoops]);
+        } else if (infiniteMap) {
+            switch (i) {
+                case 0: // left
+                adj.push([y, map[0].length-1, yLoops, xLoops-1]);
+                break;
+                case 1: // up
+                adj.push([map.length-1, x, yLoops-1, xLoops]);
+                break;
+                case 2: // right
+                adj.push([y, 0, yLoops, xLoops+1]);
+                break;
+                case 3: // down
+                adj.push([0, x, yLoops+1, xLoops]);
+                break;
+            }
         }
     }
     return adj;

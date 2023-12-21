@@ -6,15 +6,15 @@ const getStart = (garden) => {
     for (let y = 0; y < garden.length; y++) {
         for (let x = 0; x < garden[0].length; x++) {
             if (garden[y][x] === 'S') {
-                return [y, x];
+                return [y, x, 0, 0];
             }
         }
     }
 }
 
-const getAllowedNeighbors = (garden, tile) => {
+const getAllowedNeighbors = (garden, tile, infiniteMap) => {
     let allowed = [];
-    let neighbors = helper.getAdjacentLocs(garden, tile[0], tile[1]);
+    let neighbors = helper.getAdjacentLocs(garden, tile[0], tile[1], tile[2], tile[3], infiniteMap);
     for (neighbor of neighbors) {
         if (garden[neighbor[0]][neighbor[1]] !== '#') {
             allowed.push(neighbor);
@@ -29,7 +29,7 @@ function part1(garden) {
     for (let i = 0; i < 64; i++) {
         let nextTiles = new Map();
         for (tile of currentTiles) {
-            let moves = getAllowedNeighbors(garden, tile);
+            let moves = getAllowedNeighbors(garden, tile, 0, 0, false);
             for (move of moves) {
                 if (!nextTiles.has(`${move[0]},${move[1]}`)) {
                     nextTiles.set(`${move[0]},${move[1]}`, move);
@@ -41,9 +41,25 @@ function part1(garden) {
     return currentTiles.length;
 }
 
-function part2(input) {
-    return "tbd";
+function part2(garden, steps) {
+    let currentTiles = [getStart(garden)];
+
+    for (let i = 0; i < steps; i++) {
+        let nextTiles = new Map();
+        for (tile of currentTiles) {
+            let moves = getAllowedNeighbors(garden, tile, true);
+            for (move of moves) {
+                if (!nextTiles.has(`${move[0]},${move[1]},${move[2]},${move[3]}`)) {
+                    nextTiles.set(`${move[0]},${move[1]},${move[2]},${move[3]}`, move);
+                }
+            }
+        }
+        // console.log(`END OF STEP ${i+1}`)
+        currentTiles = [...nextTiles.values()];
+        // console.log(currentTiles)
+    }
+    return currentTiles.length;
 }
 
-console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+// console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(testInput, 5000));
