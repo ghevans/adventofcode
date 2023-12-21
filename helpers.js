@@ -27,4 +27,17 @@ const getAdjacentByWeight = function(map, y, x, hueristic) {
     return adj;
 }
 
-module.exports = {print, rotate90, rotate180, rotate270, getAdjacentByWeight};
+const getAdjacentLocs = function(map, y, x) {
+    let adj = [];
+    let dy = [0,-1,0,1] // l,u,r,d
+    let dx = [-1,0,1,0] // l,u,r,d
+    for(let i = 0; i < 4; i++) {
+        let next = map[y+dy[i]]?.[x+dx[i]];
+        if(next !== undefined) {
+            adj.push([y+dy[i], x+dx[i]]);
+        }
+    }
+    return adj;
+}
+
+module.exports = {print, rotate90, rotate180, rotate270, getAdjacentByWeight, getAdjacentLocs};
