@@ -44,24 +44,63 @@ function part1(garden) {
 function part2(garden, steps) {
     let currentTiles = [getStart(garden)];
 
+    let finishedGardens = new Map();
+    let activeGardens = new Map();
+
     for (let i = 0; i < steps; i++) {
         let nextTiles = new Map();
         for (tile of currentTiles) {
             let moves = getAllowedNeighbors(garden, tile, true);
             for (move of moves) {
-                if (!nextTiles.has(`${move[0]},${move[1]},${move[2]},${move[3]}`)) {
-                    nextTiles.set(`${move[0]},${move[1]},${move[2]},${move[3]}`, move);
+                if (!finishedGardens.has(`${move[2]},${move[3]}`)) {
+                    if (!nextTiles.has(`${move[0]},${move[1]},${move[2]},${move[3]}`)) {
+                        nextTiles.set(`${move[0]},${move[1]},${move[2]},${move[3]}`, move);
+                    }
                 }
             }
         }
-        let numberInFirst = [...nextTiles.values()].map((set) => [set[2], set[3]]).filter(([yLoop, xLoop]) => yLoop === 0 && xLoop === 0);
-        console.log(`[${i+1}] | Number in origin garden: ${numberInFirst.length}`)
-        // console.log(`END OF STEP ${i+1}`)
+
+        let currentGardens = [...new Set([...nextTiles.values()].map((set) => `${set[2]},${set[3]}`))];
+        for (curGarden of currentGardens) {
+            let [y,x] = curGarden.split(',').map(Number);
+            let evenOrOdd = (i % 2 === 0) ? 'e' : 'o';
+            let key = curGarden + ',' + evenOrOdd;
+            let gardenNumber = [...nextTiles.values()].map((set) => [set[2], set[3]]).filter(([yLoop, xLoop]) => yLoop === y && xLoop === x).length;
+            if (activeGardens.has(key)) {
+                if (activeGardens.get(key) === gardenNumber) {
+                    // console.log(`before Size: ${nextTiles.size}`)
+                    pruneTiles(nextTiles, y, x);
+                    // console.log(`after Size: ${nextTiles.size}`)
+                    // console.log(activeGardens.get(key))
+                    finishedGardens.set(`${y},${x}`, [activeGardens.get(`${y},${x},e`), activeGardens.get(`${y},${x},o`)]);
+                    activeGardens.delete(`${y},${x},e`);
+                    activeGardens.delete(`${y},${x},o`);
+                } else {
+                    // console.log(`no loop found, updating ${key} with ${gardenNumber}`)
+                    activeGardens.set(key, gardenNumber);
+                }
+            } else {
+                // console.log(`first time seeing this key ${key} with ${gardenNumber}`)
+                activeGardens.set(key, gardenNumber);
+            }
+        }
+
         currentTiles = [...nextTiles.values()];
-        // console.log(currentTiles)
+        if (i % 100 === 0) {
+            console.log(`After step ${i}, we have ${currentTiles.length} active tiles and ${finishedGardens.size} finished gardens`)
+        }
+        
     }
+    
     return currentTiles.length;
 }
 
+function pruneTiles(nextTiles, y, x) {
+    let keysToRemove = [...nextTiles.keys()].map((key) => [key, Number(key.split(',')[2]), Number(key.split(',')[3])]).filter(([key, yLoop, xLoop]) => yLoop === y && xLoop === x);
+    for(k of keysToRemove) {
+        nextTiles.delete(k[0]);
+    }
+}
+
 // console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput, 50));
+console.log("Part 2 - " + part2(testInput, 5000));
