@@ -54,6 +54,8 @@ function part2(garden, steps) {
                 }
             }
         }
+        let numberInFirst = [...nextTiles.values()].map((set) => [set[2], set[3]]).filter(([yLoop, xLoop]) => yLoop === 0 && xLoop === 0);
+        console.log(`[${i+1}] | Number in origin garden: ${numberInFirst.length}`)
         // console.log(`END OF STEP ${i+1}`)
         currentTiles = [...nextTiles.values()];
         // console.log(currentTiles)
@@ -62,4 +64,4 @@ function part2(garden, steps) {
 }
 
 // console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput, 5000));
+console.log("Part 2 - " + part2(testInput, 50));
