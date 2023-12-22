@@ -87,6 +87,7 @@ function part2(garden, steps) {
 
         currentTiles = [...nextTiles.values()];
         if (i % 100 === 0) {
+            console.log(finishedGardens)
             console.log(`After step ${i}, we have ${currentTiles.length} active tiles and ${finishedGardens.size} finished gardens`)
         }
         
@@ -103,4 +104,4 @@ function pruneTiles(nextTiles, y, x) {
 }
 
 // console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput, 5000));
+console.log("Part 2 - " + part2(input, 5000));
