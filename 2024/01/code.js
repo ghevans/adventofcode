@@ -25,8 +25,13 @@ function part1(input) {
 
 function part2(input) {
     let lists = buildLists(input);
-    return "tbd";
+
+    let simScore = 0;
+    for(let i = 0; i < lists[0].length; i++) {
+        simScore += lists[0][i] * lists[1].filter(v => v === lists[0][i]).length;
+    }
+    return simScore;
 }
 
-// console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(testInput));
+console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(input));
