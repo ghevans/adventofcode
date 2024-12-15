@@ -8,13 +8,11 @@ function part1(input) {
 
     let validUpdates = [];
     for (update of updates) {
-        // console.log(`\nChecking UPDATE: ${update}`);
+        
         let valid = true;
         for(let i = 0; i < update.length; i++) {
             let rule = rules.get(update[i]);
             let prevPages = update.slice(0, i), postPages = update.slice(i+1);
-            // console.log(`\tChecking page rule ${update[i]}, must be before ${rule.before} and after ${rule.after}`);
-            // console.log(`\t\tagainst these prevPages - ${prevPages} and these postPages - ${postPages}`)
             
             for (prev of prevPages) {
                 if (!rule.after.includes(prev)) {
@@ -32,15 +30,9 @@ function part1(input) {
             if (!valid) { break; }
         }
 
-        if (valid) {
-            // console.log(`\tUPDATE is valid`)
-            validUpdates.push(update);
-        } else {
-            // console.log(`\tUPDATE is invalid`)
-        }
+        if (valid) { validUpdates.push(update); }
     }
 
-    // console.log(validUpdates)
     return validUpdates.map(u => u[Math.round((u.length - 1) / 2)]).reduce((a,b) => a + b);
 }
 
