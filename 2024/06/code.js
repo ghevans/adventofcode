@@ -12,17 +12,24 @@ const findGuard = (map) => {
     }
 }
 
-function part1(map) {
-    let loc = findGuard(map);
+const walk = (map, guard) => {
+    let loc = _.clone(guard);
+    let looped = false;
 
-    let visited = new Set();
-    let i = 0;
-    while(true && i < 100) {
+    let visited = new Map();
+    while(true) {
         if ((loc.x < 0 || loc.x >= map[0].length) || 
             (loc.y < 0 || loc.y >= map.length)) {
                 break;
         }
-        visited.add(`${loc.x},${loc.y}`);
+
+        if (visited.has(`${loc.x},${loc.y},${loc.dir}`) && visited.get(`${loc.x},${loc.y},${loc.dir}`) === loc.dir) {
+            looped = true;
+            break;
+        }
+
+        visited.set(`${loc.x},${loc.y},${loc.dir}`, loc.dir);
+        
         let nextLoc = _.clone(loc);
         switch(loc.dir) {
             case '^':
@@ -59,12 +66,31 @@ function part1(map) {
                 break;
         }
     }
-    return visited.size;
+    return [visited, looped];
 }
 
-function part2(input) {
-    return "tbd";
+function part1(map) {
+    let guard = findGuard(map);
+    return walk(map, guard)[0].size;
+}
+
+function part2(map) {
+    let guard = findGuard(map);
+    let loops = 0;
+
+    for (let y = 0; y < map.length; y++) {
+        for (let x = 0; x < map[0].length; x++) {
+            if (map[y][x] === '.') {
+                map[y][x] = '#';
+                [visited, looped] = walk(map, guard);
+                loops += (looped) ? 1 : 0;
+                map[y][x] = '.';
+            }
+        }
+    }
+
+    return loops;
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
