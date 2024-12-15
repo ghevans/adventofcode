@@ -19,16 +19,33 @@ function part1(input) {
         for (let x = 0; x < input[y].length; x++) {
             if (input[y][x] === 'X') {
                 count += left(row, x) + right(row, x) + up(input, x, y) + down(input, x, y) +
-                upLeft(input, x, y) + upRight(input, x, y) + downLeft(input, x, y) + downRight(input, x, y);;
+                upLeft(input, x, y) + upRight(input, x, y) + downLeft(input, x, y) + downRight(input, x, y);
             }
         }
     }
     return count;
 }
 
+const checkXmas = (map, x, y) => {
+    let upLeft = map[y-1][x-1];
+    let upRight = map[y-1][x+1];
+    let downLeft = map[y+1][x-1];
+    let downRight = map[y+1][x+1];
+    return (((upLeft === 'M' && downRight === 'S') || (upLeft === 'S' && downRight === 'M')) &&
+            (((upRight === 'M') && downLeft === 'S') || (upRight === 'S' && downLeft === 'M')));
+}
+
 function part2(input) {
-    return "tbd";
+    let count = 0;
+    for (let y = 1; y < input.length - 1; y++) {
+        for (let x = 1; x < input[y].length - 1; x++) {
+            if (input[y][x] === 'A') {
+                count += (checkXmas(input, x, y)) ? 1 : 0;
+            }
+        }
+    }
+    return count;
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
