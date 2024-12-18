@@ -44,14 +44,67 @@ function part1(input) {
     });
 
     antinodes = antinodes.filter(c => ((c[0] >= 0 && c[0] < input.length) && (c[1] >= 0 && c[1] < input[0].length)))
-
-    antinodes = [...new Set(antinodes.map(c => `${c[0]},${c[1]}`))]
-    return antinodes.length;
+    return [...new Set(antinodes.map(c => `${c[0]},${c[1]}`))].length;
 }
 
 function part2(input) {
-    return "tbd";
+    let antennas = findAntennas(input);
+
+    let antinodes = [];
+    antennas.forEach(type => {
+        // console.log(`STARTING to build antinodes with: ${type}`)
+        while (type.length > 1) {
+            let cur = type.shift();
+            // console.log(`\tSTARTING ${cur}`)
+            antinodes.push(cur);
+            for (let i = 0; i < type.length; i++) {
+                // console.log(`\t\tCOMPARING to [${type[i]}]`)
+                let distY = type[i][0] - cur[0];
+                let distX = type[i][1] - cur[1];
+                // console.log(`\t\t\tdist is = [${distY}, ${distX}]`)
+
+                let j = 1;
+                while (true) {
+                    let nextY = cur[0] + (distY * j);
+                    let nextX = cur[1] + (distX * j);
+                    // console.log(`\t\t\tantinode at [${nextY}, ${nextX}]`)
+
+                    if ((nextY < 0 || nextY >= input.length) || 
+                        (nextX < 0 || nextX >= input[0].length)) {
+                            // console.log(`\t\tLEFT the map at [${nextY}, ${nextX}]`)
+                            break;
+                    }
+
+                    antinodes.push([nextY, nextX]);
+                    j++
+                }
+
+                j = 1;
+                distX = distX * -1;
+                distY = distY * -1;
+                // console.log(`\t\tSTARTING other direction`)
+                while (true) {
+                    let nextY = cur[0] + (distY * j);
+                    let nextX = cur[1] + (distX * j);
+                    // console.log(`\t\t\tantinode at [${nextY}, ${nextX}]`)
+
+                    if ((nextY < 0 || nextY >= input.length) || 
+                        (nextX < 0 || nextX >= input[0].length)) {
+                            // console.log(`\t\tLEFT the map at [${nextY}, ${nextX}]`)
+                            break;
+                    }
+
+                    antinodes.push([nextY, nextX]);
+                    j++
+                }
+            }
+            // console.log(`\tFINISHED with ${cur}`)
+        }
+        
+    });
+
+    return [...new Set(antinodes.map(c => `${c[0]},${c[1]}`))].length;
 }
 
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
