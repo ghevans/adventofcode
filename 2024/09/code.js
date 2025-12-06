@@ -41,41 +41,10 @@ const swap = (map) => {
     return map;
 }
 
-const swap2 = (map, groups) => {
-    map = map.flat().join('');
-    console.log(map);
-    for (let i = groups.length - 1; i >= 0; i--) {
-        let groupToPlace = groups[i];
-        let totalDigits = (""+groupToPlace.v).length * groupToPlace.b;
+function part1(input) {
+    let [diskMap, groups] = buildDiskMap(input);
 
-
-        let searchTerm = Array(totalDigits).fill('.').join('');
-        let toInsert = Array(groupToPlace.b).fill(groupToPlace.v).join('');
-        
-        // Find an open slot for the entire file (size is totalDigits long, searchTerm the '.' string of totalDigits length)
-        let firstOpenLoc = map.indexOf(searchTerm);
-        let currentLoc = groupToPlace.start;
-
-
-        if ((firstOpenLoc > 0) && (firstOpenLoc < currentLoc)) {
-            // console.log(`moving from ${currentLoc} to ${firstOpenLoc}`)
-            console.log(`\tmoving ${toInsert} from ${currentLoc} to ${firstOpenLoc}`);
-
-            console.log(`\t\tbMove:\t\t${firstOpenLoc - 10} | ${map.substring(firstOpenLoc - 10, firstOpenLoc + totalDigits + 10)} | ${firstOpenLoc + totalDigits + 10}`)
-            console.log(`\t\tbMove:\t\t${currentLoc - 10} | ${map.substring(currentLoc - 10, currentLoc + totalDigits + 10)} | ${currentLoc + totalDigits + 10}`)
-            for (let j = 0; j < totalDigits ; j++) {
-                let mArray = map.split('');
-                mArray[firstOpenLoc+j] = toInsert[j];
-                mArray[currentLoc+j] = '.';
-                map = mArray.join('');
-            }                
-            console.log(`\t\taMove:\t\t${currentLoc - 10} | ${map.substring(currentLoc - 10, currentLoc + totalDigits + 10)} | ${currentLoc + totalDigits + 10}`)
-            console.log(`\t\taMove:\t\t${firstOpenLoc - 10} | ${map.substring(firstOpenLoc - 10, firstOpenLoc + totalDigits + 10)} | ${firstOpenLoc + totalDigits + 10}`)
-        }
-    }
-
-    console.log(map)
-    return map
+    return checkSum(swap(diskMap.flat()));
 }
 
 // 108672322133 <-- so consistent
@@ -90,18 +59,90 @@ const swap2 = (map, groups) => {
 // 118201630628
 // 118151801227 <-- too low
 // 6216544403458 <-- original answer from p1
-function part1(input) {
-    let [diskMap, groups] = buildDiskMap(input);
+function part2(input) {
+    // let [diskMap, diskString] = createDisk(input);
 
-    return checkSum(swap(diskMap.flat()));
+    console.log(`2333133121414131402`.split('').map(Number).reduce((a,b) => a+b))
+
+    let disk = Array(input.map(Number).reduce((a,b) => a+b)).fill(-1);
+    console.log(disk)
+    let id = 0;
+    for (let i = 0; i < input.length; i++) {
+        if (i % 2 === 0) {
+            for (let j = 0; j < input[i]; j++) {
+                disk[i+j] = id;
+            }
+            id++;
+        }
+    }
+    console.log(disk)
+
+    // let s = swap2(diskMap, diskString)
+    // let [diskMap, groups] = buildDiskMap(input);
+    // let sortedMap = swap2(diskMap, groups);
+    // console.log(s)
+    // return checkSum(s.split(''));
 }
 
-function part2(input) {
-    let [diskMap, groups] = buildDiskMap(input);
-    let sortedMap = swap2(diskMap, groups);
-    // console.log(sortedMap)
-    return checkSum(sortedMap.split(''));
+const swap2 = (diskMap, diskString) => {
+    
+    for (let i = diskMap.length - 1; i >= 0; i--) {
+        let groupToPlace = diskMap[i];
+        let totalDigits = groupToPlace.file.length;
+        console.log(groupToPlace)
+
+        let searchTerm = Array(totalDigits).fill('.').join('');
+        console.log(searchTerm)
+        // let toInsert = Array(groupToPlace.b).fill(groupToPlace.v).join('');
+        
+        // // Find an open slot for the entire file (size is totalDigits long, searchTerm the '.' string of totalDigits length)
+        let firstOpenLoc = diskString.indexOf(searchTerm);
+        let currentLoc = groupToPlace.start;
+
+        if ((firstOpenLoc > 0) && (firstOpenLoc < currentLoc)) {
+            // console.log(`moving from ${currentLoc} to ${firstOpenLoc}`)
+            // console.log(`\tmoving ${groupToPlace.file} from ${currentLoc} to ${firstOpenLoc}`);
+
+            // console.log(`\t\tbMove:\t\t${firstOpenLoc - 10} | ${diskString.substring(firstOpenLoc - 10, firstOpenLoc + totalDigits + 10)} | ${firstOpenLoc + totalDigits + 10}`)
+            // console.log(`\t\tbMove:\t\t${currentLoc - 10} | ${diskString.substring(currentLoc - 10, currentLoc + totalDigits + 10)} | ${currentLoc + totalDigits + 10}`)
+            for (let j = 0; j < totalDigits ; j++) {
+                let mArray = diskString.split('');
+                mArray[firstOpenLoc+j] = groupToPlace.file[j];
+                mArray[currentLoc+j] = '.';
+                diskString = mArray.join('');
+            }                
+            // console.log(`\t\taMove:\t\t${currentLoc - 10} | ${diskString.substring(currentLoc - 10, currentLoc + totalDigits + 10)} | ${currentLoc + totalDigits + 10}`)
+            // console.log(`\t\taMove:\t\t${firstOpenLoc - 10} | ${diskString.substring(firstOpenLoc - 10, firstOpenLoc + totalDigits + 10)} | ${firstOpenLoc + totalDigits + 10}`)
+        }
+    }
+
+    return diskString;
+}
+
+const createDisk = (input) => {
+    let diskMap = [], i = 0, curPos = 0;
+    let diskString = [];
+    while(input.length) {
+        let block = Number(input.shift());
+        let padding = Number(input.shift());
+        padding = (isNaN(padding)) ? 0 : padding;
+
+        let nextPos = curPos + (block*(""+i).length + padding);
+        diskMap.push({
+            file: Array(block).fill(i).join(''),
+            start: curPos,
+            end: nextPos - 1
+        });
+
+        diskString.push(Array(block).fill(i));
+        diskString.push(Array(padding).fill('.'));
+        curPos = nextPos;
+        i++;
+    }
+    console.log(diskMap)
+    console.log(diskString.flat().join(''))
+    return [diskMap, diskString.flat().join('')];
 }
 
 // console.log("Part 1 - " + part1(input));
-console.log("Part 2 - " + part2(input));
+console.log("Part 2 - " + part2(testInput));
