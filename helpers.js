@@ -55,4 +55,17 @@ const getAdjacentLocs = function(map, y, x, yLoops, xLoops, infiniteMap) {
     return adj;
 }
 
-module.exports = {print, rotate90, rotate180, rotate270, getAdjacentByWeight, getAdjacentLocs};
+const getAllNeighbors = function(map, y, x) {
+    let adj = [];
+    let dy = [0,-1,0,1,-1,-1,1,1] // l,u,r,d,ul,ur,dl,dr
+    let dx = [-1,0,1,0,-1,1,-1,1] // l,u,r,d,ul,ur,dl,dr
+    for(let i = 0; i < 8; i++) {
+        let next = map[y+dy[i]]?.[x+dx[i]];
+        if(next !== undefined) {
+            adj.push(next);
+        }
+    }
+    return adj;
+}
+
+module.exports = {print, rotate90, rotate180, rotate270, getAdjacentByWeight, getAdjacentLocs, getAllNeighbors};
