@@ -7,8 +7,10 @@ function part1(input) {
     for ([start, end] of input) {
         for (let i = start; i <= end; i++) {
             let patternNum = buildNumber(getPattern(i));
-            if (patternNum >= start && patternNum <= end) {
-                invalidIds.add(patternNum)
+            if (!invalidIds.has(patternNum)) {
+                if (patternNum >= start && patternNum <= end) {
+                    invalidIds.add(patternNum)
+                }
             }
         }
     }
@@ -29,8 +31,26 @@ function getPattern(num) {
 }
 
 function part2(input) {
-    return "tbd";
+    let invalidIds = new Set();
+    for ([start, end] of input) {
+        for (let i = start; i <= end; i++) {
+            let sNum = String(i);
+            for (let j = 1; j <= sNum.length / 2; j++) {
+                let pattern = sNum.substring(0,j);
+                if (sNum.length % pattern.length === 0) {
+
+                    let patternNum = Number(pattern.repeat(sNum.length / pattern.length));
+                    if (!invalidIds.has(patternNum)) {
+                        if (patternNum >= start && patternNum <= end) {
+                            invalidIds.add(patternNum)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return [...invalidIds].reduce((a,b) => a+b, 0);
 }
 
-console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+// console.log("Part 1 - " + part1(input));
+console.log("Part 2 - " + part2(input));
