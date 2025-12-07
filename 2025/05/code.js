@@ -39,77 +39,95 @@ function part2(input) {
     for (id of ingredients) {
         for (range of ranges) {
             if (id >= range.start && id <= range.end) {
-                // console.log(`ID ${id} is VALID in range [${range.start}, ${range.end}]`)
-                validRanges.push(range)
+                if (validRanges.filter(r => r.start === range.start && r.end === range.end).length == 0) {
+                    validRanges.push(range);
+                }
             }
         }
     }
 
-    let [changed, freshIds] = mergeLists(validRanges);
-    while (changed) {
-        console.log(`loop`);
-        [changed, freshIds] = mergeLists(freshIds);
-    }
-    let finished = new Set(freshIds);
-    console.log(freshIds)
+    validRanges = _.sortBy(validRanges, "start");
+
+
+
+        console.log(validRanges)
+    merged = merge(validRanges);
+    console.log(merged);
+    // let [changed, freshIds] = mergeLists(validRanges);
+    // freshIds = _.sortBy(freshIds, "start");
+    // while (changed) {
+    //     console.log(`loop`);
+    //     [changed, freshIds] = mergeLists(freshIds);
+    // }
+    // freshIds = _.sortBy(freshIds, "start");
+    // console.log(freshIds)
     let totalValid = 0;
-    for (range of freshIds) {
+    for (range of merged) {
         totalValid += (range.end - range.start + 1)
     }
     return totalValid;
 }
 
+function merge(ranges) {
+    let merged = [];
+    for (range of ranges) {
+        if (merged.length === 0) {
+            merged.push(range);
+        } else {
+            let workingRange = merged.pop();
+            if (range.start <= workingRange.end) {
+                workingRange.end = Math.max(range.end, workingRange.end);
+                merged.push(workingRange);
+            } else {
+                merged.push(workingRange);
+                merged.push(range);
+            }
+        }
+    }
+    return merged;
+}
 function mergeLists(ranges) {
     let freshIds = [];
     let changed = false;
     freshIds.push(ranges[0]);
     for (let i = 1; i < ranges.length; i++){
-        let curStart = ranges[i].start;
-        let curEnd = ranges[i].end;
+        let curRange = ranges[i]
+        // let curStart = ranges[i].start;
+        // let curEnd = ranges[i].end;
 
         let overlap = false;
         for (range of freshIds) {
-            // if (curStart < range.start)
-            
+            if ((curStart < range.start && curEnd < range.start) || 
+                (curStart > range.end && curEnd > range.end)) {
+                // starts BEFORE, ends BEFORE or starts AFTER, ends AFTER => no updates for THIS range
+            } else if (curStart < range.start && curEnd >= range.start) {
+                // starts BEFORE, ends WITHIN => update the range.start to be curStart
+                overlap = changed = true;
+                range.start = curStart;
+            } else if (curStart >= range.start && curEnd <= range.end) {
+                // starts WITHIN, ends WITHIN => ignore this range going forward
+                overlap = true;
+            } else if (curStart >= range.start && curEnd > range.end) {
+                // starts WITHIN, ends AFTER => update the range.end to be curEnd
+                overlap = changed = true;
+                range.end = curEnd;                
+            }
 
             if (curStart === range.start && curEnd === range.end) { // same exact range
                 overlap = true;
                 break;
             }
-
-            if (isInRange(curStart, range) && !isInRange(curEnd, range)) { // if this range is AFTER the start and AFTER the end
-                console.log(`overlap detected btwn: [${curStart},${curEnd}] and [${range.start},${range.end}]`)
-                changed = true;
-                overlap = true;
-                range.end = curEnd;
-            } else if (!isInRange(curStart, range) && isInRange(curEnd, range)) { // if this range is BEFORE the start and BEFORE the end
-                console.log(`overlap detected btwn: [${curStart},${curEnd}] and [${range.start},${range.end}]`)
-                changed = true;
-                overlap = true;
-                range.start = curStart;
-            } else if (curStart < range.start && curEnd > range.end) { // if this range FULLY encompasses another range, eat it
-                console.log(`it happened`)
-                changed = true;
-                overlap = true;
-                range.start = curStart;
-                range.end = curEnd;
-            } else if (curStart >= range.start && curEnd <= range.end) { // this range is already accounted for in the range it's comparing to so skip it
-                console.log(`it happened1`)
-                changed = true;
-                overlap = true;
-            }
         }
         if (!overlap) {
-            freshIds.push(ranges[i])
+            freshIds.push(ranges[i]);
         }
     }
     return [changed, freshIds];
 }
 
-// checks if val is WITHIN the start/end of the range provided INCLUSIVE of both
-function isInRange(val, range) {
-    return (val >= range.start && val <= range.end)
-}
-
 // console.log("Part 1 - " + part1(input));
 console.log("Part 2 - " + part2(input));
+
+// wrong and too low - 344752770033736
+//                     344752770033736
+//                     342306396024860 "not the right asnwer"
