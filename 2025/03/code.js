@@ -24,10 +24,27 @@ function getMaxJoltage(bank) {
 }
 
 function part2(input) {
-    return "tbd";
+    let numDigits = 12;
+    let jolts = [];
+    for (bank of input) {
+        let dropsAllowed = bank.length - numDigits;
+        let currentBest = [];
+
+        for (i = 0; i < bank.length; i++) {
+            let num = Number(bank[i]);
+            
+            while(currentBest.length > 0 && dropsAllowed > 0 && currentBest[currentBest.length -1] < num) {
+                currentBest.pop();
+                dropsAllowed--;
+            }
+            currentBest.push(num)
+        }
+
+        jolts.push(Number(currentBest.slice(0,numDigits).join('')));
+    }
+    return jolts.reduce((a,b) => a+b, 0);
 }
 
 
-
 console.log("Part 1 - " + part1(input));
-// console.log("Part 2 - " + part2(testInput));
+console.log("Part 2 - " + part2(input));
